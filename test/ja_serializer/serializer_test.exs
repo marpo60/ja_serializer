@@ -30,6 +30,14 @@ defmodule JaSerializer.SerializerTest do
     end
   end
 
+  defmodule MyView do
+    use JaSerializer
+
+    attributes([:title, :body])
+
+    def title(%{title: title}), do: "Custom #{title}"
+  end
+
   defmodule InlineByCompilerArticle do
     use JaSerializer
 
@@ -43,6 +51,7 @@ defmodule JaSerializer.SerializerTest do
   @view ArticleView
   @custom CustomArticle
   @inline_by_compiler InlineByCompilerArticle
+  @my_view MyView
 
   test "it should determine the type" do
     assert @serializer.type == "article"
@@ -60,6 +69,11 @@ defmodule JaSerializer.SerializerTest do
 
     assert @view.attributes(article, %{}) == %{title: "test"}
     assert @custom.attributes(article, %{}) == %{body: "test"}
+
+    assert @my_view.attributes(article, %{}) == %{
+             title: "Custom test",
+             body: "test"
+           }
 
     assert @inline_by_compiler.attributes(article, %{}) == %{
              length: 1,

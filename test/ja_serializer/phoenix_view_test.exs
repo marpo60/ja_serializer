@@ -21,6 +21,24 @@ defmodule JaSerializer.PhoenixViewTest do
     defstruct page_number: 3, total_pages: 5, page_size: 10
   end
 
+  test "x", c do
+    defmodule PhoenixExample.MyView do
+      use JaSerializer.PhoenixView
+      attributes([:title])
+
+      def title(%{title: title}), do: "Custom #{title}"
+    end
+
+    json = PhoenixExample.MyView.render("index.json-api", conn: %{}, data: [c[:m1], c[:m2]])
+
+    assert [a1, _a2] = json["data"]
+    assert a1 == %{
+      "attributes" => %{"title" => "Custom article one"},
+      "id" => "1",
+      "type" => "mies"
+    }
+  end
+
   test "render conn, index.json-api, data: data", c do
     json = @view.render("index.json-api", conn: %{}, data: [c[:m1], c[:m2]])
     assert [a1, _a2] = json["data"]
